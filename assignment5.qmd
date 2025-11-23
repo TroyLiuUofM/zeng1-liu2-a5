@@ -189,34 +189,64 @@ table(clust_dat_t$cluster)
 Find the mean population, household income and per capita income grouped by clusters. In addition, display the most frequent county that can be observed within each cluster.
 
 ```{r}
-cluster_summary <- clust_dat_t %>%
+clust_summary <- clust_dat_t %>%
   group_by(cluster) %>%
   summarise(
-    mean_pop       = mean(pop, na.rm = TRUE),
+    mean_pop      = mean(pop, na.rm = TRUE),
     mean_hh_income = mean(hh_income, na.rm = TRUE),
-    mean_income    = mean(income, na.rm = TRUE)
+    mean_income   = mean(income, na.rm = TRUE),
+    most_freq_county = names(sort(table(county), decreasing = TRUE))[1]
   )
 
-cluster_summary
-```
-
-```{r}
-final_summary <- left_join(cluster_summary, county_mode, by = "cluster")
-final_summary
+clust_summary
 ```
 
 As you might have seen earlier, it's not always clear which number of clusters is the optimal choice. To automate K Means clustering, program a function based on `kmeans()` that takes K as an argument. You can fix the other arguments, e.g. such that a specific dataset is always used when calling the function.
 
 ```{r}
-
+run_kmeans <- function(K) {
+  set.seed(123)  # for reproducibility
+  km <- kmeans(Xt, centers = K, nstart = 25)
+  
+  # Add cluster assignment to the tract data
+  clust_dat_t$cluster <- km$cluster
+  
+  # Return the cluster assignments and summary statistics
+  clust_summary <- clust_dat_t %>%
+    group_by(cluster) %>%
+    summarise(
+      mean_pop      = mean(pop, na.rm = TRUE),
+      mean_hh_income = mean(hh_income, na.rm = TRUE),
+      mean_income   = mean(income, na.rm = TRUE),
+      most_freq_county = names(sort(table(county), decreasing = TRUE))[1]
+    )
+  
+  return(list(
+    kmeans_result = km,
+    cluster_data  = clust_dat_t,
+    summary       = clust_summary
+  ))
+}
 ```
 
 We want to utilize this function to iterate over multiple Ks (e.g., K = 2, ..., 10) and -- each time -- add the resulting cluster membership as a new variable to our (cleaned) original data frame (`acs_il_t`). There are multiple solutions for this task, e.g. think about the `apply` family or `for` loops.
-```{r}
 
+```{r}
+# Cleaned tract-level data for clustering
+acs_data <- clust_dat_t  # this already has GEO_ID, county, pop, hh_income, income
+
+# Iterate over K = 2 to 10
+for (K in 2:10) {
+  set.seed(123)
+  km <- kmeans(Xt, centers = K, nstart = 25)
+  
+  # Add cluster membership as a new column named like "cluster_K2", "cluster_K3", etc.
+  acs_data[[paste0("cluster_K", K)]] <- km$cluster
+}
 ```
 
 Finally, display the first rows of the updated data set (with multiple cluster columns).
-```{r}
 
+```{r}
+head(acs_data)
 ```
