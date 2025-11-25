@@ -23,7 +23,6 @@ In this notebook, we use the Census API to gather data from the American Communi
 https://api.census.gov/data/key_signup.html
 
 ```{r}
-#| eval: false
 cs_key = "55d7b56135bd20c3d94c7f4b56d448aa88b66406" #Troy please don't leak my key, lol
 acs_il_c <- getCensus(name = "acs/acs5",
                     vintage = 2016,
@@ -43,7 +42,6 @@ head(acs_il_c)
 Pull map data for Illinois into a data frame.
 
 ```{r}
-#| eval: false
 il_map <- map_data("county", region = "illinois")
 head(il_map)
 ```
@@ -68,8 +66,6 @@ acs_map %>% select(subregion, pop, income) %>% head()
 After you do this, plot a map of Illinois with Counties colored by per capita income.
 
 ```{r}
-#| eval: false
-
 ggplot(acs_map) +
   geom_polygon(aes(long, lat, group = group, fill = income), color = NA) +
   coord_quickmap() +
@@ -120,7 +116,6 @@ Visualize the county clusters on a map. For this task, create a new `acs_map` ob
 For the next section we need ACS data on a census tract level. We use the same variables as before.
 
 ```{r}
-#| eval: false
 acs_il_t <- getCensus(
   name    = "acs/acs5",
   vintage = 2016,
