@@ -10,7 +10,6 @@ You may work in pairs or individually for this assignment. Make sure you join a 
 Working directory at: <https://github.com/TroyLiuUofM/zeng1-liu2-a5.git>
 
 ```{r}
-#| eval: false
 library(censusapi)
 library(tidyverse)
 library(magrittr)
