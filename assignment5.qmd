@@ -14,6 +14,7 @@ library(censusapi)
 library(tidyverse)
 library(magrittr)
 library(factoextra)
+library(readr)
 ```
 
 ## Exploring ACS Data
@@ -23,7 +24,8 @@ In this notebook, we use the Census API to gather data from the American Communi
 https://api.census.gov/data/key_signup.html
 
 ```{r}
-cs_key = "55d7b56135bd20c3d94c7f4b56d448aa88b66406" #Troy please don't leak my key, lol
+cs_key_path <- "/Users/zpzzz/Desktop/SURV727/census_key.txt"
+cs_key <- read_file(cs_key_path) |> trimws()
 acs_il_c <- getCensus(name = "acs/acs5",
                     vintage = 2016,
                     vars = c("NAME", 
